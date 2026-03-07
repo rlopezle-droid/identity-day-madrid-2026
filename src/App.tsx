@@ -860,7 +860,7 @@ function App() {
           <div className="glass-card rounded-2xl overflow-hidden">
             <div className="relative aspect-[16/9] w-full">
               <iframe
-                src="https://sailpoint-spy-event-ncg2lwcam-rlopezle-9851s-projects.vercel.app/"
+                src="https://sailpoint-spy-event.vercel.app/"
                 className="absolute inset-0 w-full h-full border-0"
                 title="SailPoint SPY Event App"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -873,7 +873,7 @@ function App() {
                 <p className="text-gray-400 text-sm">Interactúa con la app en tiempo real</p>
               </div>
               <Button 
-                onClick={() => window.open('https://sailpoint-spy-event-ncg2lwcam-rlopezle-9851s-projects.vercel.app/', '_blank')}
+                onClick={() => window.open('https://sailpoint-spy-event.vercel.app/', '_blank')}
                 className="btn-primary text-white"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
