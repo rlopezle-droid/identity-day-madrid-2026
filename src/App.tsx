@@ -366,7 +366,7 @@ function App() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <img 
-                src="/images/sailpoint-logo-white.png" 
+                src="/images/Logo.svg" 
                 alt="SailPoint" 
                 className="h-12 w-auto"
               />
@@ -1087,7 +1087,7 @@ function App() {
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <img 
-                  src="/images/sailpoint-logo-white.png" 
+                  src="/images/Logo.svg" 
                   alt="SailPoint" 
                   className="h-12 w-auto"
                 />
