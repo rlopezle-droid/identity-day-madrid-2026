@@ -195,7 +195,7 @@ function App() {
       />
       <label htmlFor="consentimiento" className="text-sm text-gray-300 cursor-pointer">
         He leído y acepto la{' '}
-        <a href="#" className="text-[#00A3E0] hover:underline" target="_blank" rel="noopener noreferrer">
+        <a href="https://www.sailpoint.com/legal/privacy" className="text-[#00A3E0] hover:underline" target="_blank" rel="noopener noreferrer">
           Política de Privacidad
         </a>{' '}
         y el tratamiento de mis datos personales para gestionar mi solicitud de información sobre los productos y servicios de SailPoint.
