@@ -1125,7 +1125,7 @@ function App() {
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li>eventos@sailpoint.com</li>
+                <li><a href="https://www.sailpoint.com/contact-us">Formulario de Contacto</a></li>
                 <li>Madrid, España</li>
                 <li>23 de Abril, 2026</li>
               </ul>
