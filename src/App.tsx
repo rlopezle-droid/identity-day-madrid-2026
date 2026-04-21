@@ -59,25 +59,25 @@ function App() {
       icon: <Cpu className="w-8 h-8" />,
       title: "Agent Identity Security",
       description: "Gobierna y asegura agentes de IA a nivel de permisos. Descubre, gobierna y certifica agentes de IA como si fueran humanos, vinculando contexto de usuario y datos.",
-      image: "/images/Slide%202%20-%20Network%20of%20Autonomous%20AI%20Agents.png"
+      image: "/images/Futuristic cyber command center (3).png"
     },
     {
       icon: <Network className="w-8 h-8" />,
       title: "Observability & Insights",
       description: "Visualización interactiva basada en grafos de relaciones de identidad y rutas de acceso. Elimina puntos ciegos con visibilidad completa de entidades humanas y no humanas.",
-      image: "/images/Slide%203%20-%20Identity%20Graph.png"
+      image: "/images/Futuristic cyber command center (0).png"
     },
     {
       icon: <Eye className="w-8 h-8" />,
       title: "Data Access Security",
       description: "Visibilidad centralizada de quién puede acceder a qué datos y cómo se utilizan. Integración con Snowflake para datos estructurados y no estructurados.",
-      image: "/images/Slide%205%20-%20Global%20AI%20Identity%20Adaptative%20Network.png"
+      image: "/images/Futuristic cyber command center (5).png"
     },
     {
       icon: <Zap className="w-8 h-8" />,
       title: "Atlas Enterprise",
       description: "Orquestación de seguridad dinámica y respuesta en tiempo real a riesgos identificados. Aprobaciones adaptativas basadas en contexto de riesgo y negocio.",
-      image: "/images/Futuristic%20cyber%20command%20center%20(0).png"
+      image: "/images/Futuristic cyber command center (1).png"
     }
   ];
 
