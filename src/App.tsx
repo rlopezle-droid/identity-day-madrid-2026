@@ -26,7 +26,6 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
-// URL del formulario externo (SharePoint/Microsoft Forms)
 const FORM_URL = 'https://forms.cloud.microsoft/r/Q3Ra4Bfvsh';
 
 function App() {
@@ -51,7 +50,6 @@ function App() {
     setMobileMenuOpen(false);
   };
 
-  // Abre el formulario externo de Microsoft Forms
   const openForm = () => {
     window.open(FORM_URL, '_blank', 'noopener,noreferrer');
   };
@@ -129,41 +127,39 @@ function App() {
     }
   ];
 
-  // Partners actualizados: Deloitte, KPMG, Fujitsu, IndraMind, DXC
   const partners = [
     {
       name: "Deloitte",
+      logo: "DE",
       description: "Firma global líder en consultoría y servicios profesionales. Su práctica de Cyber & Identity ayuda a grandes empresas a diseñar e implementar estrategias de gobierno de identidad, integrando SailPoint en arquitecturas Zero Trust a escala global.",
-      services: ["Consultoría estratégica", "Implementación IGA", "Zero Trust"],
-      logo: "DE"
+      services: ["Consultoría estratégica", "Implementación IGA", "Zero Trust"]
     },
     {
       name: "KPMG",
+      logo: "KP",
       description: "Una de las Big Four a nivel mundial, con una práctica de Identity & Access Management consolidada. KPMG combina experiencia en auditoría y ciberseguridad para acompañar proyectos de gobierno de identidad con foco en cumplimiento regulatorio (GDPR, SOX, NIS2).",
-      services: ["Auditoría IAM", "Compliance", "Transformación digital"],
-      logo: "KP"
+      services: ["Auditoría IAM", "Compliance", "Transformación digital"]
     },
     {
       name: "Fujitsu",
+      logo: "FJ",
       description: "Corporación tecnológica japonesa con presencia en más de 100 países. Partner Platinum de SailPoint, Fujitsu ofrece servicios gestionados de identidad y capacidades de delivery worldwide, con especial fortaleza en el sector financiero y administración pública.",
-      services: ["Managed Services", "Servicios gestionados", "Sector público"],
-      logo: "FJ"
+      services: ["Managed Services", "Servicios gestionados", "Sector público"]
     },
     {
       name: "IndraMind",
+      logo: "IM",
       description: "Compañía tecnológica española de referencia en transformación digital e innovación. Combina la experiencia en ciberseguridad e identidad digital de Indra con capacidades avanzadas de inteligencia artificial para ofrecer soluciones IGA adaptadas al mercado ibérico.",
-      services: ["Ciberseguridad", "Identidad digital", "IA aplicada"],
-      logo: "IM"
+      services: ["Ciberseguridad", "Identidad digital", "IA aplicada"]
     },
     {
-      name: "DXC Technology",
+      name: "DXC",
+      logo: "DX",
       description: "Compañía global de servicios tecnológicos que ayuda a las organizaciones a gestionar sus sistemas y operaciones críticas. Su práctica de Identity Security integra SailPoint en entornos híbridos y multi-cloud complejos, con foco en automatización y reducción de riesgo operacional.",
-      services: ["Integración cloud", "Automatización IAM", "Outsourcing TI"],
-      logo: "DX"
+      services: ["Integración cloud", "Automatización IAM", "Outsourcing TI"]
     }
   ];
 
-  // Agenda actualizada
   const agendaItems = [
     {
       time: "11:00 - 11:30",
@@ -265,10 +261,13 @@ function App() {
         </span>
       </div>
 
-      {/* Navigation — pushed down by ticker (40px) + own height */}
-      <nav className={`fixed left-0 right-0 z-50 transition-all duration-500 ${
-        isScrolled ? 'glass py-3' : 'bg-transparent py-5'
-      }`} style={{ top: '40px' }}>
+      {/* ── NAVIGATION ── */}
+      <nav
+        className={`fixed left-0 right-0 z-50 transition-all duration-500 ${
+          isScrolled ? 'glass py-3' : 'bg-transparent py-5'
+        }`}
+        style={{ top: '40px' }}
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -297,7 +296,10 @@ function App() {
               </Button>
             </div>
 
-            <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
+            <button
+              className="md:hidden text-white"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
@@ -319,8 +321,11 @@ function App() {
         )}
       </nav>
 
-      {/* Hero Section — top padding accounts for ticker (40px) + nav (~80px) */}
-      <section className="hero-bg min-h-screen flex items-center justify-center relative pb-16" style={{ paddingTop: '160px' }}>
+      {/* ── HERO ── */}
+      <section
+        className="hero-bg min-h-screen flex items-center justify-center relative pb-16"
+        style={{ paddingTop: '160px' }}
+      >
         <div className="absolute inset-0 grid-pattern opacity-50" />
         <div className="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-[#00A3E0]/20 blur-xl animate-float" />
         <div className="absolute bottom-1/4 right-10 w-32 h-32 rounded-full bg-[#0066CC]/20 blur-xl animate-float" style={{ animationDelay: '2s' }} />
@@ -403,7 +408,7 @@ function App() {
         </div>
       </section>
 
-      {/* Stats Section */}
+      {/* ── STATS ── */}
       <section className="py-20 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
@@ -422,7 +427,7 @@ function App() {
         </div>
       </section>
 
-      {/* Novedades Section */}
+      {/* ── NOVEDADES ── */}
       <section id="novedades" className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0066CC]/5 to-transparent" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -475,7 +480,7 @@ function App() {
         </div>
       </section>
 
-      {/* Vision & Strategy Section */}
+      {/* ── VISION & STRATEGY ── */}
       <section id="vision" className="py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-12">
@@ -668,7 +673,7 @@ function App() {
         </div>
       </section>
 
-      {/* Partners Section */}
+      {/* ── PARTNERS ── */}
       <section id="partners" className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0066CC]/5 via-transparent to-[#00A3E0]/5" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -690,9 +695,25 @@ function App() {
             {partners.map((partner, index) => (
               <div key={index} className="glass-card rounded-2xl p-8 card-hover">
                 <div className="flex items-start gap-6">
-                  <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-[#0066CC] to-[#00A3E0] flex items-center justify-center flex-shrink-0">
-                    <span className="text-2xl font-bold text-white">{partner.logo}</span>
+
+                  {/* ── LOGO BOX ── */}
+                  <div className="w-24 h-24 rounded-xl bg-white flex items-center justify-center flex-shrink-0 p-3 shadow-md">
+                    <img
+                      src={`/images/${partner.name}.png`}
+                      alt={`${partner.name} logo`}
+                      className="w-full h-full object-contain"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.style.display = 'none';
+                        const parent = target.parentElement;
+                        if (parent) {
+                          parent.style.background = 'linear-gradient(135deg, #0066CC, #00A3E0)';
+                          parent.innerHTML = `<span style="color:white;font-weight:bold;font-size:1.25rem">${partner.logo}</span>`;
+                        }
+                      }}
+                    />
                   </div>
+
                   <div className="flex-1">
                     <h3 className="text-2xl font-bold mb-3">{partner.name}</h3>
                     <p className="text-gray-400 mb-4">{partner.description}</p>
@@ -711,7 +732,7 @@ function App() {
         </div>
       </section>
 
-      {/* Event Info Section */}
+      {/* ── EVENT INFO ── */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0066CC]/5 via-transparent to-[#00A3E0]/5" />
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
@@ -758,7 +779,10 @@ function App() {
                   </div>
                 </div>
               </div>
-              <Button onClick={openForm} className="btn-primary text-white px-8 py-6 rounded-full text-lg font-semibold">
+              <Button
+                onClick={openForm}
+                className="btn-primary text-white px-8 py-6 rounded-full text-lg font-semibold"
+              >
                 <MessageSquare className="w-5 h-5 mr-2" />
                 Contactar con el equipo
               </Button>
@@ -789,7 +813,7 @@ function App() {
         </div>
       </section>
 
-      {/* Agenda Section */}
+      {/* ── AGENDA ── */}
       <section id="agenda" className="py-24 relative">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
@@ -806,17 +830,20 @@ function App() {
             <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 timeline-line transform md:-translate-x-1/2" />
             <div className="space-y-8">
               {agendaItems.map((item, index) => (
-                <div key={index} className={`relative flex items-start gap-8 ${
-                  index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
-                }`}>
+                <div
+                  key={index}
+                  className={`relative flex items-start gap-8 ${
+                    index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
+                  }`}
+                >
                   <div className="absolute left-4 md:left-1/2 w-4 h-4 rounded-full bg-gradient-to-br from-[#0066CC] to-[#00A3E0] transform -translate-x-1/2 mt-6 z-10 shadow-lg shadow-[#00A3E0]/50" />
-                  <div className={`ml-12 md:ml-0 md:w-5/12 ${
-                    index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'
-                  }`}>
+                  <div
+                    className={`ml-12 md:ml-0 md:w-5/12 ${
+                      index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'
+                    }`}
+                  >
                     <div className="glass-card rounded-xl p-6 card-hover">
-                      <div className={`flex items-center gap-2 mb-2 ${
-                        index % 2 === 0 ? 'md:justify-end' : ''
-                      }`}>
+                      <div className={`flex items-center gap-2 mb-2 ${index % 2 === 0 ? 'md:justify-end' : ''}`}>
                         <Clock className="w-4 h-4 text-[#00A3E0]" />
                         <span className="text-sm text-[#00A3E0] font-semibold">{item.time}</span>
                       </div>
@@ -840,7 +867,7 @@ function App() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* ── CTA ── */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-[#0066CC]/20 via-[#00A3E0]/20 to-[#6366F1]/20" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -852,7 +879,10 @@ function App() {
             o agendar una sesión personalizada post-evento.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button onClick={openForm} className="btn-primary text-white px-10 py-6 rounded-full text-lg font-semibold">
+            <Button
+              onClick={openForm}
+              className="btn-primary text-white px-10 py-6 rounded-full text-lg font-semibold"
+            >
               <MessageSquare className="w-5 h-5 mr-2" />
               Solicitar información
             </Button>
@@ -868,7 +898,7 @@ function App() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* ── FOOTER ── */}
       <footer className="py-12 border-t border-white/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid md:grid-cols-4 gap-8 mb-8">
@@ -920,7 +950,7 @@ function App() {
         </div>
       </footer>
 
-      {/* QR Dialog — imagen adjunta */}
+      {/* ── QR DIALOG ── */}
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
         <DialogContent className="glass border-white/10 max-w-sm">
           <DialogHeader>
@@ -932,7 +962,6 @@ function App() {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col items-center py-6">
-            {/* QR image provided by the client — place file at /images/qr-workshops.png */}
             <img
               src="/images/qr-workshops.png"
               alt="Identity Workshops QR"
