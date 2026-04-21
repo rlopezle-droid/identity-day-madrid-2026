@@ -19,7 +19,6 @@ import {
   X,
   MessageSquare,
   Video,
-  ExternalLink,
   Handshake,
   QrCode
 } from 'lucide-react';
