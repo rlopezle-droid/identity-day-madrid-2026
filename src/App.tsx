@@ -21,46 +21,25 @@ import {
   Video,
   ExternalLink,
   Handshake,
-  Info,
-  Loader2,
-  CheckCircle,
   QrCode
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 
-// URL del Webhook de Google Apps Script
-const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbx9diM0sk3gBM0YOm0q_SX8ugeiOgXOVTJzEV5qoNq7eEdEFzD5ZO6vOQ1tyAs5M8IdHQ/exec';
+// URL del formulario externo (SharePoint/Microsoft Forms)
+const FORM_URL = 'https://forms.cloud.microsoft/r/Q3Ra4Bfvsh';
 
 function App() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [contactOpen, setContactOpen] = useState(false);
-  const [scheduleOpen, setScheduleOpen] = useState(false);
   const [qrOpen, setQrOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'novedades' | 'vision' | 'futuro'>('novedades');
-  const [contactType, setContactType] = useState<'info' | 'demo'>('info');
-
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
-  const [submitError, setSubmitError] = useState('');
-
-  const [formData, setFormData] = useState({
-    nombre: '',
-    email: '',
-    empresa: '',
-    consulta: '',
-    tipoSesion: '',
-    disponibilidad: '',
-    consentimiento: false
-  });
 
   useEffect(() => {
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 50);
     };
-
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
@@ -73,140 +52,10 @@ function App() {
     setMobileMenuOpen(false);
   };
 
-  const enviarAlWebhook = async (data: any) => {
-    try {
-      await fetch(WEBHOOK_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: {
-          'Content-Type': 'text/plain',
-        },
-        body: JSON.stringify(data),
-      });
-
-      return { success: true };
-    } catch (error) {
-      console.error('Error en la red:', error);
-      throw error;
-    }
+  // Abre el formulario externo de Microsoft Forms
+  const openForm = () => {
+    window.open(FORM_URL, '_blank', 'noopener,noreferrer');
   };
-
-  const handleContactSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.consentimiento) {
-      setSubmitError('Debes aceptar la política de privacidad para continuar.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError('');
-
-    try {
-      await enviarAlWebhook({
-        tipo: contactType,
-        nombre: formData.nombre,
-        email: formData.email,
-        empresa: formData.empresa,
-        consulta: formData.consulta,
-        cargo: 'Contacto Web'
-      });
-
-      setSubmitSuccess(true);
-
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        setContactOpen(false);
-        setFormData({
-          nombre: '',
-          email: '',
-          empresa: '',
-          consulta: '',
-          tipoSesion: '',
-          disponibilidad: '',
-          consentimiento: false
-        });
-      }, 2500);
-
-    } catch (error) {
-      setSubmitError('Error de conexión. Revisa tu internet o inténtalo más tarde.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleScheduleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!formData.consentimiento) {
-      setSubmitError('Debes aceptar la política de privacidad para continuar.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setSubmitError('');
-
-    try {
-      await enviarAlWebhook({
-        tipo: 'demo',
-        nombre: formData.nombre,
-        email: formData.email,
-        empresa: formData.empresa,
-        consulta: `Tipo de sesión: ${formData.tipoSesion}. Disponibilidad: ${formData.disponibilidad}`,
-        cargo: formData.tipoSesion
-      });
-
-      setSubmitSuccess(true);
-
-      setTimeout(() => {
-        setSubmitSuccess(false);
-        setScheduleOpen(false);
-        setFormData({
-          nombre: '',
-          email: '',
-          empresa: '',
-          consulta: '',
-          tipoSesion: '',
-          disponibilidad: '',
-          consentimiento: false
-        });
-      }, 3000);
-    } catch (error) {
-      setSubmitError('Hubo un error al enviar la solicitud. Por favor, inténtalo de nuevo.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const CheckboxRGPD = ({
-    checked,
-    onChange
-  }: {
-    checked: boolean;
-    onChange: (checked: boolean) => void;
-  }) => (
-    <div className="flex items-start gap-3 p-4 rounded-lg bg-white/5 border border-white/10">
-      <input
-        type="checkbox"
-        id="consentimiento"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
-        className="mt-1 w-5 h-5 rounded border-white/30 bg-white/10 text-[#00A3E0] focus:ring-[#00A3E0] focus:ring-offset-0"
-      />
-      <label htmlFor="consentimiento" className="text-sm text-gray-300 cursor-pointer">
-        He leído y acepto la{' '}
-        <a href="https://www.sailpoint.com/legal/privacy" className="text-[#00A3E0] hover:underline" target="_blank" rel="noopener noreferrer">
-          Política de Privacidad
-        </a>{' '}
-        y el tratamiento de mis datos personales para gestionar mi solicitud de información sobre los productos y servicios de SailPoint.
-        Entiendo que mis datos serán tratados conforme al RGPD y podré ejercer mis derechos de acceso, rectificación, supresión,
-        oposición, limitación del tratamiento y portabilidad dirigiéndome a:{' '}
-        <a href="mailto:privacy@sailpoint.com" className="text-[#00A3E0] hover:underline">
-          privacy@sailpoint.com
-        </a>
-      </label>
-    </div>
-  );
 
   const innovations = [
     {
@@ -281,111 +130,156 @@ function App() {
     }
   ];
 
+  // Partners actualizados: Deloitte, KPMG, Fujitsu, IndraMind, DXC
   const partners = [
     {
-      name: "IC Consult",
-      description: "Especialistas en implementación y consultoría de soluciones SailPoint. Líderes en proyectos de gobierno de identidad para grandes empresas europeas.",
-      services: ["Implementación", "Consultoría", "Soporte"],
-      logo: "IC"
+      name: "Deloitte",
+      description: "Firma global líder en consultoría y servicios profesionales. Su práctica de Cyber & Identity ayuda a grandes empresas a diseñar e implementar estrategias de gobierno de identidad, integrando SailPoint en arquitecturas Zero Trust a escala global.",
+      services: ["Consultoría estratégica", "Implementación IGA", "Zero Trust"],
+      logo: "DE"
     },
     {
-      name: "SIA",
-      description: "Partner estratégico con amplia experiencia en transformación digital y seguridad de identidad en el sector financiero y utilities.",
-      services: ["Integración", "Desarrollo", "Formación"],
-      logo: "SIA"
-    },
-    {
-      name: "Devoteam",
-      description: "Consultora tecnológica especializada en cloud, ciberseguridad e inteligencia artificial. Expertos en despliegues enterprise de SailPoint.",
-      services: ["Cloud", "Ciberseguridad", "IA"],
-      logo: "DV"
+      name: "KPMG",
+      description: "Una de las Big Four a nivel mundial, con una práctica de Identity & Access Management consolidada. KPMG combina experiencia en auditoría y ciberseguridad para acompañar proyectos de gobierno de identidad con foco en cumplimiento regulatorio (GDPR, SOX, NIS2).",
+      services: ["Auditoría IAM", "Compliance", "Transformación digital"],
+      logo: "KP"
     },
     {
       name: "Fujitsu",
-      description: "Corporación tecnológica global con presencia en más de 100 países. Partner Platinum de SailPoint con capacidades de delivery worldwide.",
-      services: ["Managed Services", "Consultoría", "Outsourcing"],
+      description: "Corporación tecnológica japonesa con presencia en más de 100 países. Partner Platinum de SailPoint, Fujitsu ofrece servicios gestionados de identidad y capacidades de delivery worldwide, con especial fortaleza en el sector financiero y administración pública.",
+      services: ["Managed Services", "Servicios gestionados", "Sector público"],
       logo: "FJ"
+    },
+    {
+      name: "IndraMind",
+      description: "Compañía tecnológica española de referencia en transformación digital e innovación. Combina la experiencia en ciberseguridad e identidad digital de Indra con capacidades avanzadas de inteligencia artificial para ofrecer soluciones IGA adaptadas al mercado ibérico.",
+      services: ["Ciberseguridad", "Identidad digital", "IA aplicada"],
+      logo: "IM"
+    },
+    {
+      name: "DXC Technology",
+      description: "Compañía global de servicios tecnológicos que ayuda a las organizaciones a gestionar sus sistemas y operaciones críticas. Su práctica de Identity Security integra SailPoint en entornos híbridos y multi-cloud complejos, con foco en automatización y reducción de riesgo operacional.",
+      services: ["Integración cloud", "Automatización IAM", "Outsourcing TI"],
+      logo: "DX"
     }
   ];
 
+  // Agenda actualizada
   const agendaItems = [
     {
-      time: "09:00 - 09:30",
-      title: "Registro y Bienvenida",
-      description: "Recepción de asistentes, café de networking y preparación para la jornada.",
+      time: "11:00 - 11:30",
+      title: "Registro",
+      description: "Recepción de asistentes y preparación para la jornada.",
       icon: <CoffeeIcon />
     },
     {
-      time: "09:30 - 10:30",
-      title: "Keynote: La Era de la Identidad Adaptativa",
-      description: "Presentación de las últimas innovaciones de SailPoint y visión estratégica para 2026-2027.",
+      time: "11:30 - 11:45",
+      title: "Bienvenida",
+      description: "Apertura oficial del evento e introducción al programa del día.",
       icon: <Sparkles className="w-5 h-5" />
     },
     {
-      time: "10:30 - 11:30",
-      title: "Tendencias del Mercado y Novedades",
-      description: "Análisis de tendencias en ciberseguridad y presentación de nuestra propuesta de valor actualizada.",
+      time: "11:45 - 12:45",
+      title: "Identidad & IA: columna vertebral del SOC",
+      description: "Keynote principal: cómo la identidad adaptativa se convierte en el núcleo de operaciones de seguridad en la era de la IA.",
       icon: <TrendingUp className="w-5 h-5" />
     },
     {
-      time: "11:30 - 12:00",
-      title: "Coffee Break & Networking",
-      description: "Pausa para café y oportunidad de conectar con otros profesionales del sector.",
-      icon: <Users className="w-5 h-5" />
-    },
-    {
-      time: "12:00 - 13:00",
-      title: "Estrategias de Transformación Digital",
-      description: "Cómo hacer de la seguridad de la identidad el pilar de tu transformación digital.",
+      time: "12:45 - 13:00",
+      title: "Entrevista con Ayuntamiento de Madrid",
+      description: "Caso de uso real: cómo el Ayuntamiento de Madrid está transformando su gobierno de identidad con SailPoint.",
       icon: <Globe className="w-5 h-5" />
     },
     {
-      time: "13:00 - 14:30",
-      title: "Almuerzo de Networking",
-      description: "Almuerzo en un espacio diseñado para facilitar las conexiones entre asistentes.",
-      icon: <Users className="w-5 h-5" />
+      time: "13:00 - 13:35",
+      title: "Panel de Partners",
+      description: "Nuestros partners estratégicos comparten visión, experiencias de implementación y tendencias del mercado.",
+      icon: <Handshake className="w-5 h-5" />
     },
     {
-      time: "14:30 - 15:30",
-      title: "Casos de Éxito: Clientes y Partners",
-      description: "Testimonios de clientes y partners sobre cómo la identidad está transformando la ciberseguridad.",
+      time: "13:40 - 14:15",
+      title: "Panel de Clientes",
+      description: "Testimonios directos de clientes sobre cómo SailPoint está transformando su postura de seguridad.",
       icon: <CheckCircle2 className="w-5 h-5" />
     },
     {
-      time: "15:30 - 16:30",
-      title: "Demos en Vivo: Adaptive Identity en Acción",
-      description: "Demostraciones prácticas de Agent Identity Security, Observability y Data Access Security.",
-      icon: <Eye className="w-5 h-5" />
+      time: "14:15 - 14:30",
+      title: "Wrap Up & Kahoot",
+      description: "Resumen de los puntos clave del día y actividad interactiva para los asistentes.",
+      icon: <Sparkles className="w-5 h-5" />
     },
     {
-      time: "16:30 - 17:00",
-      title: "Clausura y Networking Final",
-      description: "Resumen de la jornada, próximos pasos y tiempo para networking final.",
-      icon: <Sparkles className="w-5 h-5" />
+      time: "14:30 - 15:30",
+      title: "Cocktail",
+      description: "Networking en un ambiente distendido para conectar con colegas, partners y el equipo de SailPoint.",
+      icon: <Users className="w-5 h-5" />
     }
   ];
 
   return (
     <div className="min-h-screen bg-[#0A1628] text-white overflow-x-hidden">
-      {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+
+      {/* ── TICKER ── */}
+      <div style={{
+        background: '#0077B6',
+        padding: '10px 0',
+        overflow: 'hidden',
+        whiteSpace: 'nowrap',
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 60
+      }}>
+        <span style={{
+          display: 'inline-block',
+          animation: 'ticker 40s linear infinite',
+          fontFamily: 'monospace',
+          fontSize: '12px',
+          letterSpacing: '1px',
+          color: 'rgba(255,255,255,0.85)'
+        }}>
+          96% de CISOs ven los agentes IA como amenaza crítica
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          78% de agentes sin propietario asignado
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          Ratio no-humano:humano = 37:1 · SailPoint gobierna ambos
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          $9.4M coste anual medio de incidentes de agentes
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          +340% crecimiento anual de AI Agents · ¿Los tienes gobernados?
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          SailPoint: líder del Magic Quadrant de IGA 10+ años consecutivos
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          96% de CISOs ven los agentes IA como amenaza crítica
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          78% de agentes sin propietario asignado
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          Ratio no-humano:humano = 37:1 · SailPoint gobierna ambos
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          $9.4M coste anual medio de incidentes de agentes
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          +340% crecimiento anual de AI Agents · ¿Los tienes gobernados?
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+          SailPoint: líder del Magic Quadrant de IGA 10+ años consecutivos
+          <span style={{ margin: '0 24px', color: 'rgba(255,255,255,0.3)' }}>///</span>
+        </span>
+      </div>
+
+      {/* Navigation — pushed down by ticker (40px) + own height */}
+      <nav className={`fixed left-0 right-0 z-50 transition-all duration-500 ${
         isScrolled ? 'glass py-3' : 'bg-transparent py-5'
-      }`}>
+      }`} style={{ top: '40px' }}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img
-                src="/images/Logo.svg"
-                alt="SailPoint"
-                className="h-12 w-auto"
-              />
+              <img src="/images/Logo.svg" alt="SailPoint" className="h-12 w-auto" />
             </div>
 
             <div className="hidden md:flex items-center gap-8">
               <button onClick={() => scrollToSection('novedades')} className="text-sm text-gray-300 hover:text-white transition-colors">Novedades</button>
               <button onClick={() => scrollToSection('vision')} className="text-sm text-gray-300 hover:text-white transition-colors">Visión</button>
               <button onClick={() => scrollToSection('partners')} className="text-sm text-gray-300 hover:text-white transition-colors">Partners</button>
-              <button onClick={() => scrollToSection('spy')} className="text-sm text-gray-300 hover:text-white transition-colors">SPY App</button>
               <button onClick={() => scrollToSection('agenda')} className="text-sm text-gray-300 hover:text-white transition-colors">Agenda</button>
               <Button
                 onClick={() => setQrOpen(true)}
@@ -396,7 +290,7 @@ function App() {
                 QR
               </Button>
               <Button
-                onClick={() => { setContactType('info'); setContactOpen(true); }}
+                onClick={openForm}
                 className="btn-primary text-white px-6 py-2 rounded-full font-medium"
               >
                 <MessageSquare className="w-4 h-4 mr-2" />
@@ -404,28 +298,20 @@ function App() {
               </Button>
             </div>
 
-            <button
-              className="md:hidden text-white"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
+            <button className="md:hidden text-white" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden glass mt-3 py-4 px-4">
             <div className="flex flex-col gap-4">
               <button onClick={() => scrollToSection('novedades')} className="text-left text-gray-300 hover:text-white">Novedades</button>
               <button onClick={() => scrollToSection('vision')} className="text-left text-gray-300 hover:text-white">Visión</button>
               <button onClick={() => scrollToSection('partners')} className="text-left text-gray-300 hover:text-white">Partners</button>
-              <button onClick={() => scrollToSection('spy')} className="text-left text-gray-300 hover:text-white">SPY App</button>
               <button onClick={() => scrollToSection('agenda')} className="text-left text-gray-300 hover:text-white">Agenda</button>
-              <Button
-                onClick={() => { setContactType('info'); setContactOpen(true); setMobileMenuOpen(false); }}
-                className="btn-primary text-white w-full"
-              >
+              <Button onClick={openForm} className="btn-primary text-white w-full">
                 <MessageSquare className="w-4 h-4 mr-2" />
                 Contacto
               </Button>
@@ -434,10 +320,9 @@ function App() {
         )}
       </nav>
 
-      {/* Hero Section - alternativa 8 */}
-      <section className="hero-bg min-h-screen flex items-center justify-center relative pt-24 pb-16">
+      {/* Hero Section — top padding accounts for ticker (40px) + nav (~80px) */}
+      <section className="hero-bg min-h-screen flex items-center justify-center relative pb-16" style={{ paddingTop: '160px' }}>
         <div className="absolute inset-0 grid-pattern opacity-50" />
-
         <div className="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-[#00A3E0]/20 blur-xl animate-float" />
         <div className="absolute bottom-1/4 right-10 w-32 h-32 rounded-full bg-[#0066CC]/20 blur-xl animate-float" style={{ animationDelay: '2s' }} />
         <div className="absolute top-1/2 right-1/4 w-16 h-16 rounded-full bg-[#6366F1]/20 blur-xl animate-float" style={{ animationDelay: '4s' }} />
@@ -500,16 +385,13 @@ function App() {
                   allowFullScreen
                 />
               </div>
-
               <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-[#0A1628]/70 via-transparent to-transparent" />
             </div>
 
-            {/* Stats floating cards */}
             <div className="hidden md:block absolute -bottom-6 left-6 glass-card rounded-xl p-4 animate-float">
               <div className="text-3xl font-bold gradient-text">53%</div>
               <div className="text-sm text-gray-400">Fortune 500</div>
             </div>
-
             <div className="hidden md:block absolute -top-6 right-6 glass-card rounded-xl p-4 animate-float" style={{ animationDelay: '1s' }}>
               <div className="text-3xl font-bold gradient-text-cyan">#1</div>
               <div className="text-sm text-gray-400">En IGA 2024</div>
@@ -544,7 +426,6 @@ function App() {
       {/* Novedades Section */}
       <section id="novedades" className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#0066CC]/5 to-transparent" />
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <Badge className="badge-glow text-[#00A3E0] mb-4">
@@ -579,26 +460,15 @@ function App() {
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-3">{item.title}</h3>
                   <p className="text-gray-400 text-sm leading-relaxed mb-4">{item.description}</p>
-                  <div className="flex gap-3">
-                    <Button
-                      onClick={() => { setContactType('info'); setContactOpen(true); }}
-                      variant="outline"
-                      size="sm"
-                      className="border-[#00A3E0]/40 text-[#00A3E0] hover:bg-[#00A3E0]/10"
-                    >
-                      <Info className="w-4 h-4 mr-2" />
-                      Más información
-                    </Button>
-                    <Button
-                      onClick={() => setScheduleOpen(true)}
-                      variant="outline"
-                      size="sm"
-                      className="border-[#6366F1]/40 text-[#6366F1] hover:bg-[#6366F1]/10"
-                    >
-                      <Video className="w-4 h-4 mr-2" />
-                      Agendar sesión
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={openForm}
+                    variant="outline"
+                    size="sm"
+                    className="border-[#00A3E0]/40 text-[#00A3E0] hover:bg-[#00A3E0]/10"
+                  >
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    Solicitar información
+                  </Button>
                 </div>
               </div>
             ))}
@@ -639,7 +509,6 @@ function App() {
                     proporcionan protección adecuada. Las identidades abarcan humanos, máquinas y agentes de IA,
                     todas accediendo a aplicaciones y datos, creando una vasta nueva superficie de ataque.
                   </p>
-
                   <div className="space-y-4">
                     {[
                       "Descubre y gobierna agentes de IA como certificas humanos",
@@ -653,12 +522,8 @@ function App() {
                       </div>
                     ))}
                   </div>
-
-                  <div className="mt-8 flex gap-4">
-                    <Button
-                      onClick={() => { setContactType('info'); setContactOpen(true); }}
-                      className="btn-primary text-white"
-                    >
+                  <div className="mt-8">
+                    <Button onClick={openForm} className="btn-primary text-white">
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Solicitar información
                     </Button>
@@ -739,10 +604,7 @@ function App() {
               </div>
 
               <div className="mt-8 text-center">
-                <Button
-                  onClick={() => setScheduleOpen(true)}
-                  className="btn-primary text-white px-8 py-4 rounded-full"
-                >
+                <Button onClick={openForm} className="btn-primary text-white px-8 py-4 rounded-full">
                   <Video className="w-5 h-5 mr-2" />
                   Agendar sesión técnica post-evento
                 </Button>
@@ -794,7 +656,7 @@ function App() {
 
               <div className="mt-8 text-center">
                 <Button
-                  onClick={() => { setContactType('info'); setContactOpen(true); }}
+                  onClick={openForm}
                   variant="outline"
                   className="border-[#00A3E0]/40 text-[#00A3E0] hover:bg-[#00A3E0]/10 px-8 py-4"
                 >
@@ -810,7 +672,6 @@ function App() {
       {/* Partners Section */}
       <section id="partners" className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0066CC]/5 via-transparent to-[#00A3E0]/5" />
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="text-center mb-16">
             <Badge className="badge-glow text-[#00A3E0] mb-4">
@@ -851,54 +712,9 @@ function App() {
         </div>
       </section>
 
-      {/* SPY App Section */}
-      <section id="spy" className="py-24 relative">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <Badge className="badge-glow text-[#00A3E0] mb-4">
-              <ExternalLink className="w-4 h-4 mr-2 inline" />
-              Aplicación Interactiva
-            </Badge>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
-              SailPoint <span className="gradient-text">SPY Event</span>
-            </h2>
-            <p className="text-gray-400 max-w-3xl mx-auto text-lg">
-              Explora nuestra aplicación interactiva para descubrir más sobre el evento,
-              participar en actividades y conectar con otros asistentes.
-            </p>
-          </div>
-
-          <div className="glass-card rounded-2xl overflow-hidden">
-            <div className="relative aspect-[16/9] w-full">
-              <iframe
-                src="https://sailpoint-spy-event.vercel.app/"
-                className="absolute inset-0 w-full h-full border-0"
-                title="SailPoint SPY Event App"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              />
-            </div>
-            <div className="p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div>
-                <h3 className="text-lg font-bold mb-1">Aplicación SPY Event</h3>
-                <p className="text-gray-400 text-sm">Interactúa con la app en tiempo real</p>
-              </div>
-              <Button
-                onClick={() => window.open('https://sailpoint-spy-event.vercel.app/', '_blank')}
-                className="btn-primary text-white"
-              >
-                <ExternalLink className="w-4 h-4 mr-2" />
-                Abrir en nueva pestaña
-              </Button>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Event Info Section */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-b from-[#0066CC]/5 via-transparent to-[#00A3E0]/5" />
-
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
@@ -906,17 +722,14 @@ function App() {
                 <Calendar className="w-4 h-4 mr-2 inline" />
                 23 de Abril, 2026
               </Badge>
-
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
                 Madrid: Epicentro de la{' '}
                 <span className="gradient-text">Innovación</span>
               </h2>
-
               <p className="text-gray-400 text-lg mb-8">
                 Una jornada única donde desvelaremos las novedades más esperadas de SailPoint.
                 Nuestros clientes y partners compartirán cómo la Identidad está transformando el panorama de la ciberseguridad.
               </p>
-
               <div className="space-y-6 mb-8">
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066CC]/20 to-[#00A3E0]/20 flex items-center justify-center flex-shrink-0">
@@ -927,7 +740,6 @@ function App() {
                     <p className="text-gray-400 text-sm">Descubre las últimas novedades acerca de nuestra propuesta de valor.</p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066CC]/20 to-[#00A3E0]/20 flex items-center justify-center flex-shrink-0">
                     <TrendingUp className="w-6 h-6 text-[#00A3E0]" />
@@ -937,7 +749,6 @@ function App() {
                     <p className="text-gray-400 text-sm">Haz de la seguridad de la identidad el pilar de tu transformación digital.</p>
                   </div>
                 </div>
-
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-[#0066CC]/20 to-[#00A3E0]/20 flex items-center justify-center flex-shrink-0">
                     <Users className="w-6 h-6 text-[#00A3E0]" />
@@ -948,11 +759,7 @@ function App() {
                   </div>
                 </div>
               </div>
-
-              <Button
-                onClick={() => { setContactType('info'); setContactOpen(true); }}
-                className="btn-primary text-white px-8 py-6 rounded-full text-lg font-semibold"
-              >
+              <Button onClick={openForm} className="btn-primary text-white px-8 py-6 rounded-full text-lg font-semibold">
                 <MessageSquare className="w-5 h-5 mr-2" />
                 Contactar con el equipo
               </Button>
@@ -964,7 +771,6 @@ function App() {
                 alt="Madrid Event"
                 className="rounded-2xl shadow-2xl"
               />
-
               <div className="absolute -bottom-6 -left-6 glass-card rounded-xl p-6 max-w-xs">
                 <div className="flex items-center gap-3 mb-4">
                   <MapPin className="w-5 h-5 text-[#00A3E0]" />
@@ -976,7 +782,7 @@ function App() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="w-5 h-5 text-[#00A3E0]" />
-                  <span className="font-semibold">09:00 - 17:00 CET</span>
+                  <span className="font-semibold">11:00 - 15:30 CET</span>
                 </div>
               </div>
             </div>
@@ -999,14 +805,12 @@ function App() {
 
           <div className="relative">
             <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-0.5 timeline-line transform md:-translate-x-1/2" />
-
             <div className="space-y-8">
               {agendaItems.map((item, index) => (
                 <div key={index} className={`relative flex items-start gap-8 ${
                   index % 2 === 0 ? 'md:flex-row' : 'md:flex-row-reverse'
                 }`}>
                   <div className="absolute left-4 md:left-1/2 w-4 h-4 rounded-full bg-gradient-to-br from-[#0066CC] to-[#00A3E0] transform -translate-x-1/2 mt-6 z-10 shadow-lg shadow-[#00A3E0]/50" />
-
                   <div className={`ml-12 md:ml-0 md:w-5/12 ${
                     index % 2 === 0 ? 'md:text-right md:pr-12' : 'md:text-left md:pl-12'
                   }`}>
@@ -1021,7 +825,6 @@ function App() {
                       <p className="text-gray-400 text-sm">{item.description}</p>
                     </div>
                   </div>
-
                   <div className="hidden md:block md:w-5/12" />
                 </div>
               ))}
@@ -1029,26 +832,11 @@ function App() {
           </div>
 
           <div className="mt-16 text-center">
-            <p className="text-gray-400 mb-6">
-              ¿Tienes preguntas sobre alguna sesión específica?
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button
-                onClick={() => { setContactType('info'); setContactOpen(true); }}
-                className="btn-primary text-white"
-              >
-                <MessageSquare className="w-4 h-4 mr-2" />
-                Consultar sobre sesiones
-              </Button>
-              <Button
-                onClick={() => setScheduleOpen(true)}
-                variant="outline"
-                className="border-[#00A3E0]/40 text-[#00A3E0] hover:bg-[#00A3E0]/10"
-              >
-                <Video className="w-4 h-4 mr-2" />
-                Agendar follow-up
-              </Button>
-            </div>
+            <p className="text-gray-400 mb-6">¿Tienes preguntas sobre alguna sesión específica?</p>
+            <Button onClick={openForm} className="btn-primary text-white">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Consultar sobre sesiones
+            </Button>
           </div>
         </div>
       </section>
@@ -1056,7 +844,6 @@ function App() {
       {/* CTA Section */}
       <section className="py-24 relative">
         <div className="absolute inset-0 bg-gradient-to-r from-[#0066CC]/20 via-[#00A3E0]/20 to-[#6366F1]/20" />
-
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">
             ¿Necesitas <span className="gradient-text">más información</span>?
@@ -1065,17 +852,13 @@ function App() {
             Nuestro equipo está disponible para resolver tus dudas, proporcionarte documentación adicional
             o agendar una sesión personalizada post-evento.
           </p>
-
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              onClick={() => { setContactType('info'); setContactOpen(true); }}
-              className="btn-primary text-white px-10 py-6 rounded-full text-lg font-semibold"
-            >
+            <Button onClick={openForm} className="btn-primary text-white px-10 py-6 rounded-full text-lg font-semibold">
               <MessageSquare className="w-5 h-5 mr-2" />
               Solicitar información
             </Button>
             <Button
-              onClick={() => setScheduleOpen(true)}
+              onClick={openForm}
               variant="outline"
               className="border-[#00A3E0]/40 text-[#00A3E0] hover:bg-[#00A3E0]/10 px-10 py-6 rounded-full text-lg font-semibold"
             >
@@ -1092,17 +875,12 @@ function App() {
           <div className="grid md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <img
-                  src="/images/Logo.svg"
-                  alt="SailPoint"
-                  className="h-12 w-auto"
-                />
+                <img src="/images/Logo.svg" alt="SailPoint" className="h-12 w-auto" />
               </div>
               <p className="text-gray-400 text-sm">
                 La plataforma líder en seguridad de identidad empresarial.
               </p>
             </div>
-
             <div>
               <h4 className="font-semibold mb-4">Evento</h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -1112,7 +890,6 @@ function App() {
                 <li><button onClick={() => scrollToSection('agenda')} className="hover:text-white transition-colors">Agenda</button></li>
               </ul>
             </div>
-
             <div>
               <h4 className="font-semibold mb-4">Recursos</h4>
               <ul className="space-y-2 text-sm text-gray-400">
@@ -1121,33 +898,30 @@ function App() {
                 <li><a href="https://www.sailpoint.com/blog" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Blog</a></li>
               </ul>
             </div>
-
             <div>
               <h4 className="font-semibold mb-4">Contacto</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="https://www.sailpoint.com/contact-us">Formulario de Contacto</a></li>
+                <li>eventos@sailpoint.com</li>
                 <li>Madrid, España</li>
                 <li>23 de Abril, 2026</li>
               </ul>
             </div>
           </div>
-
           <div className="section-divider mb-8" />
-
           <div className="flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-gray-500 text-sm">
               © 2026 SailPoint Technologies, Inc. Todos los derechos reservados.
             </p>
             <div className="flex gap-6 text-sm text-gray-500">
-              <a href="https://www.sailpoint.com/legal/privacy" className="hover:text-white transition-colors">Privacidad</a>
-              <a href="https://www.sailpoint.com/legal/terms-of-use" className="hover:text-white transition-colors">Términos</a>
-              <a href="https://www.sailpoint.com/legal/cookie-notice" className="hover:text-white transition-colors">Cookies</a>
+              <a href="#" className="hover:text-white transition-colors">Privacidad</a>
+              <a href="#" className="hover:text-white transition-colors">Términos</a>
+              <a href="#" className="hover:text-white transition-colors">Cookies</a>
             </div>
           </div>
         </div>
       </footer>
 
-      {/* QR Code Dialog */}
+      {/* QR Dialog — imagen adjunta */}
       <Dialog open={qrOpen} onOpenChange={setQrOpen}>
         <DialogContent className="glass border-white/10 max-w-sm">
           <DialogHeader>
@@ -1155,251 +929,23 @@ function App() {
               Escanea el <span className="gradient-text">Código QR</span>
             </DialogTitle>
             <DialogDescription className="text-center text-gray-400">
-              Accede al microsite desde tu móvil escaneando este código
+              Accede al microsite desde tu móvil
             </DialogDescription>
           </DialogHeader>
-
           <div className="flex flex-col items-center py-6">
-            <div className="bg-white p-4 rounded-xl">
-              <img
-                src="/images/qr-code.png"
-                alt="QR Code"
-                className="w-48 h-48"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.style.display = 'none';
-                  const parent = target.parentElement;
-                  if (parent) {
-                    parent.innerHTML = '<div class="w-48 h-48 flex items-center justify-center bg-gray-100 text-gray-500 text-sm text-center p-4">QR Code<br/>Generado dinámicamente</div>';
-                  }
-                }}
-              />
-            </div>
+            {/* QR image provided by the client — place file at /images/qr-workshops.png */}
+            <img
+              src="/images/qr-workshops.png"
+              alt="Identity Workshops QR"
+              className="w-56 h-56 rounded-xl"
+            />
             <p className="text-gray-400 text-sm mt-4 text-center">
-              O visita directamente:
-              <br />
-              <a href="https://identity-day-madrid-2026.vercel.app/" className="text-[#00A3E0] hover:underline">
-                IdentityDay - MicroSite 2026
-              </a>
+              Identity Workshops · SailPoint Madrid 2026
             </p>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Contact Dialog */}
-      <Dialog open={contactOpen} onOpenChange={setContactOpen}>
-        <DialogContent className="glass border-white/10 max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">
-              {contactType === 'info' ? 'Solicitar' : 'Agendar'}{' '}
-              <span className="gradient-text">Información</span>
-            </DialogTitle>
-            <DialogDescription className="text-center text-gray-400">
-              {contactType === 'info'
-                ? 'Completa tus datos y nos pondremos en contacto contigo.'
-                : 'Agenda una sesión personalizada post-evento con nuestro equipo.'}
-            </DialogDescription>
-          </DialogHeader>
-
-          {submitSuccess ? (
-            <div className="py-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">¡Solicitud enviada!</h3>
-              <p className="text-gray-400">Te contactaremos pronto.</p>
-            </div>
-          ) : (
-            <form className="space-y-4 mt-4" onSubmit={handleContactSubmit}>
-              <div>
-                <label className="block text-sm font-medium mb-2">Nombre completo *</label>
-                <input
-                  type="text"
-                  value={formData.nombre}
-                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  placeholder="Tu nombre"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Correo electrónico *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  placeholder="tu@empresa.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Empresa *</label>
-                <input
-                  type="text"
-                  value={formData.empresa}
-                  onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  placeholder="Nombre de tu empresa"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">
-                  {contactType === 'info' ? '¿Sobre qué tema necesitas información?' : '¿Qué día prefieres para la sesión?'}
-                </label>
-                <textarea
-                  value={formData.consulta}
-                  onChange={(e) => setFormData({ ...formData, consulta: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors resize-none"
-                  rows={3}
-                  placeholder={contactType === 'info' ? 'Describe tu consulta...' : 'Indica tu disponibilidad...'}
-                />
-              </div>
-
-              <CheckboxRGPD
-                checked={formData.consentimiento}
-                onChange={(checked) => setFormData({ ...formData, consentimiento: checked })}
-              />
-
-              {submitError && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-                  {submitError}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full btn-primary text-white py-4 rounded-lg font-semibold mt-6 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  contactType === 'info' ? 'Enviar solicitud' : 'Agendar sesión'
-                )}
-              </Button>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Schedule Dialog */}
-      <Dialog open={scheduleOpen} onOpenChange={setScheduleOpen}>
-        <DialogContent className="glass border-white/10 max-w-md max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-center">
-              Agendar <span className="gradient-text">Sesión Post-Evento</span>
-            </DialogTitle>
-            <DialogDescription className="text-center text-gray-400">
-              Programa una sesión personalizada con nuestro equipo técnico o comercial después del evento.
-            </DialogDescription>
-          </DialogHeader>
-
-          {submitSuccess ? (
-            <div className="py-8 text-center">
-              <div className="w-16 h-16 rounded-full bg-green-500/20 flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-green-400" />
-              </div>
-              <h3 className="text-xl font-bold mb-2">¡Solicitud enviada!</h3>
-              <p className="text-gray-400">Te contactaremos pronto para confirmar la fecha.</p>
-            </div>
-          ) : (
-            <form className="space-y-4 mt-4" onSubmit={handleScheduleSubmit}>
-              <div>
-                <label className="block text-sm font-medium mb-2">Nombre completo *</label>
-                <input
-                  type="text"
-                  value={formData.nombre}
-                  onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  placeholder="Tu nombre"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Correo electrónico *</label>
-                <input
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  placeholder="tu@empresa.com"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Empresa *</label>
-                <input
-                  type="text"
-                  value={formData.empresa}
-                  onChange={(e) => setFormData({ ...formData, empresa: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  placeholder="Nombre de tu empresa"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Tipo de sesión *</label>
-                <select
-                  value={formData.tipoSesion}
-                  onChange={(e) => setFormData({ ...formData, tipoSesion: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-[#00A3E0] transition-colors"
-                  required
-                >
-                  <option value="" className="bg-[#0A1628]">Selecciona el tipo de sesión</option>
-                  <option value="demo" className="bg-[#0A1628]">Demo técnica de producto</option>
-                  <option value="consultoria" className="bg-[#0A1628]">Consultoría de arquitectura</option>
-                  <option value="comercial" className="bg-[#0A1628]">Reunión comercial</option>
-                  <option value="partnership" className="bg-[#0A1628]">Información para partners</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium mb-2">Preferencia de fecha/hora</label>
-                <textarea
-                  value={formData.disponibilidad}
-                  onChange={(e) => setFormData({ ...formData, disponibilidad: e.target.value })}
-                  className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/10 text-white placeholder-gray-500 focus:outline-none focus:border-[#00A3E0] transition-colors resize-none"
-                  rows={2}
-                  placeholder="Indica tu disponibilidad (ej: Semana del 28 de abril, mañanas)..."
-                />
-              </div>
-
-              <CheckboxRGPD
-                checked={formData.consentimiento}
-                onChange={(checked) => setFormData({ ...formData, consentimiento: checked })}
-              />
-
-              {submitError && (
-                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-                  {submitError}
-                </div>
-              )}
-
-              <Button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full btn-primary text-white py-4 rounded-lg font-semibold mt-6 disabled:opacity-50"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Enviando...
-                  </>
-                ) : (
-                  <>
-                    <Video className="w-4 h-4 mr-2" />
-                    Confirmar solicitud
-                  </>
-                )}
-              </Button>
-            </form>
-          )}
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
