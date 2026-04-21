@@ -71,7 +71,7 @@ function App() {
       icon: <Eye className="w-8 h-8" />,
       title: "Data Access Security",
       description: "Visibilidad centralizada de quién puede acceder a qué datos y cómo se utilizan. Integración con Snowflake para datos estructurados y no estructurados.",
-      image: "/images/Futuristic cyber command center (5).png"
+      image: "/images/Slide 3 - Identity Graph.png"
     },
     {
       icon: <Zap className="w-8 h-8" />,
